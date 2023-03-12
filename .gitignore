@@ -20,7 +20,7 @@ modules/monitor/
 modules/perception/
 modules/prediction/
 modules/routing/
-modules/stroytelling/
+modules/storytelling/
 modules/task_manager/
 modules/third_party_perception/
 modules/transform/
