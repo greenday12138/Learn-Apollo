@@ -1,0 +1,57 @@
+{
+    "linux_distribution": "Ubuntu 18.04.5 LTS",
+    "kernal": "Linux 5.4.0-42-generic",
+    "arch": "x86_64",
+    "image": "registry.baidubce.com/apollo/apollo-env-gpu:0.0.4-dev",
+    "apollo_distribution": "neo",
+    "package_info": {
+        "type": "local",
+        "source": "/apollo_workspace/modules/planning",
+        "build_ops": [ ]
+    },
+    "release_detail": {
+        "name": "planning",
+        "ver": "1.0.0.3",
+        "arch": "amd64",
+        "description": "Apollo planning module.",
+        "deps": [
+            "libcolpack-dev", "libadolc-dev", "coinor-libipopt-dev", "libtinyxml2-dev", 
+            "3rd-ad-rss-lib-dev", "3rd-libtorch-cpu-dev", "3rd-mkl-dev", "3rd-magma-dev",
+            "3rd-gflags-dev", "3rd-gtest-dev", "3rd-absl-dev",
+            "3rd-proj-dev", "3rd-opencv-dev", "3rd-glog-dev",
+            "libtinyxml2-dev", "3rd-boost-dev", "3rd-ipopt-dev", "3rd-eigen3-dev", 
+            "libadolc-dev", "3rd-ad-rss-lib-dev", "cyber-dev", "common-dev",
+            "common-msgs-dev", "map-dev", "3rd-protobuf-dev",
+            "3rd-rules-python-dev", "3rd-grpc-dev", "3rd-bazel-skylib-dev", 
+            "3rd-rules-proto-dev", "3rd-py-dev", "3rd-gpus-dev", "bazel-extend-tools-dev"
+        ],
+        "preinst_extend_ops": [ ],
+        "postinst_extend_ops": [
+            "if [ ! -f /apollo/LICENSE ]; then mkdir -p /apollo/modules/planning/; fi",
+            "if [ ! -f /apollo/LICENSE ]; then chmod a+rw /apollo/modules/planning/; fi",
+
+            "if [ ! -f /apollo/LICENSE ]; then rm -rf /apollo/modules/planning/conf; fi",
+            "if [ ! -f /apollo/LICENSE ]; then rm -rf /apollo/modules/planning/data; fi",
+            "if [ ! -f /apollo/LICENSE ]; then rm -rf /apollo/modules/planning/dag; fi",
+            "if [ ! -f /apollo/LICENSE ]; then rm -rf /apollo/modules/planning/launch; fi",
+
+            "if [ ! -f /apollo/LICENSE ]; then rm -rf /apollo/modules/planning/testdata; fi",
+
+            "if [ ! -f /apollo/LICENSE ]; then for i in $(ls /opt/apollo/neo/packages/planning-dev/latest/addition_data); do ln -snf  /opt/apollo/neo/packages/planning-dev/latest/addition_data/\"$i\" /apollo/modules/planning/\"$i\"; done; fi",
+            
+            "if [ ! -f /apollo/LICENSE ]; then ln -snf /opt/apollo/neo/packages/planning-dev/latest/conf /apollo/modules/planning/conf; fi",
+            "if [ ! -f /apollo/LICENSE ]; then ln -snf /opt/apollo/neo/packages/planning-dev/latest/data /apollo/modules/planning/data; fi",
+            "if [ ! -f /apollo/LICENSE ]; then ln -snf /opt/apollo/neo/packages/planning-dev/latest/dag /apollo/modules/planning/dag; fi",
+            "if [ ! -f /apollo/LICENSE ]; then ln -snf /opt/apollo/neo/packages/planning-dev/latest/launch /apollo/modules/planning/launch; fi",
+            "if [ -d /opt/apollo/neo/packages/planning-dev/latest/python ]; then rsync  -avr --whole-file --progress /opt/apollo/neo/packages/planning-dev/latest/python/ /opt/apollo/neo/python; fi"
+        ],
+        "prerm_extend_ops": [ ],
+        "postrm_extend_ops": [ ],
+        "data": [
+            {
+                "src": "planning-dev/local",
+                "des": "-"
+            }
+        ]
+    }
+}
