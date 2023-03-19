@@ -257,6 +257,7 @@ std::shared_ptr<Node3d> HybridAStar::Next_node_generator(
 
 void HybridAStar::CalculateNodeCost(std::shared_ptr<Node3d> current_node,
                                     std::shared_ptr<Node3d> next_node) {
+  // A*中走过的轨迹代价G
   next_node->SetTrajCost(current_node->GetTrajCost() +
                          TrajCost(current_node, next_node));
   // evaluate heuristic cost
@@ -271,7 +272,7 @@ double HybridAStar::TrajCost(std::shared_ptr<Node3d> current_node,
   double piecewise_cost = 0.0;
   if (next_node->GetDirec()) {
     piecewise_cost += static_cast<double>(next_node->GetStepSize() - 1) *
-                      step_size_ * traj_forward_penalty_;
+                      step_size_ * traj_forward_penalty_; // 前进后退惩罚
   } else {
     piecewise_cost += static_cast<double>(next_node->GetStepSize() - 1) *
                       step_size_ * traj_back_penalty_;
@@ -281,13 +282,13 @@ double HybridAStar::TrajCost(std::shared_ptr<Node3d> current_node,
   }
   piecewise_cost += traj_steer_penalty_ * std::abs(next_node->GetSteer());
   piecewise_cost += traj_steer_change_penalty_ *
-                    std::abs(next_node->GetSteer() - current_node->GetSteer());
+                    std::abs(next_node->GetSteer() - current_node->GetSteer()); // 档位切换惩罚
   return piecewise_cost;
 }
 
 double HybridAStar::HoloObstacleHeuristic(std::shared_ptr<Node3d> next_node) {
   return grid_a_star_heuristic_generator_->CheckDpMap(next_node->GetX(),
-                                                      next_node->GetY());
+                                                      next_node->GetY()); // 转向切换惩罚
 }
 
 bool HybridAStar::GetResult(HybridAStartResult* result) {
@@ -786,6 +787,7 @@ bool HybridAStar::Plan(
   double heuristic_time = 0.0;
   double rs_time = 0.0;
   while (!open_pq_.empty()) {
+    // Hybrid A* 主算法
     // take out the lowest cost neighboring node
     const std::string current_id = open_pq_.top().first;
     open_pq_.pop();
@@ -795,12 +797,14 @@ bool HybridAStar::Plan(
     // ends.
     const double rs_start_time = Clock::NowInSeconds();
     if (AnalyticExpansion(current_node)) {
+      // 如果生成了一条从当前点到目标点的ReedSheep曲线，就找到了最短路径
       break;
     }
     const double rs_end_time = Clock::NowInSeconds();
     rs_time += rs_end_time - rs_start_time;
     close_set_.emplace(current_node->GetIndex(), current_node);
     for (size_t i = 0; i < next_node_num_; ++i) {
+      // 扩展节点，车辆运动学模型
       std::shared_ptr<Node3d> next_node = Next_node_generator(current_node, i);
       // boundary check failure handle
       if (next_node == nullptr) {
@@ -817,6 +821,7 @@ bool HybridAStar::Plan(
       if (open_set_.find(next_node->GetIndex()) == open_set_.end()) {
         explored_node_num++;
         const double start_time = Clock::NowInSeconds();
+        // 计算cost
         CalculateNodeCost(current_node, next_node);
         const double end_time = Clock::NowInSeconds();
         heuristic_time += end_time - start_time;
