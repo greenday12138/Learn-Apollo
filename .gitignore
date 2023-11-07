@@ -25,3 +25,4 @@ modules/task_manager/
 modules/third_party_perception/
 modules/transform/
 modules/v2x/
+*.tar.gz
